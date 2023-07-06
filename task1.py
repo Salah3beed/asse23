@@ -287,6 +287,11 @@ if __name__ == "__main__":
     RF_Buckling_Biaxial.index = RF_Buckling_Biaxial.index + 1
     print((RF_Buckling_Biaxial))
     
+    print("---------------")
+    print("K_biax")
+    print("---------------")  
+    print(k_biax)
+    
     critical_Shear = sigma_xy_crit()
     RF_Buckling_Shear = get_RF(critical_Shear,STRESS_avg_XY)
     
@@ -297,6 +302,10 @@ if __name__ == "__main__":
     RF_Buckling_Shear.index = RF_Buckling_Shear.index + 1
     print(RF_Buckling_Shear)
     
+    print("---------------")
+    print("K_shear")
+    print("---------------")  
+    print(k_shear)
     
     print("---------------")
     print("RF against Panel Buckling Combined")
