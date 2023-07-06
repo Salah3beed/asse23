@@ -12,7 +12,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 E = 70747.95
 Sult = 530
 Syield = 490
-nu = 0.35
+nu = 0.34
 PI = 3.14159265359
 
 # Panel Properties
@@ -227,6 +227,15 @@ def combined_stress(Sxx,Sax,Al,Ar,As):
         combined.loc[i] = [(Sxx.loc[i]*Al + Sxx.loc[i+1]*Ar  + Sax.loc[i]*As)/(Al+Ar+As)]
     return combined
 
+def max_stress_stringers(column):
+    # get the max of each three consecutive rows in df
+    column = abs(column)
+    max_stress = column.rolling(window=3, min_periods=1).max()
+    max_stress = max_stress[column.index % 3 == 2]
+    max_stress.reset_index(drop=True)
+    return max_stress.tail(9)
+    
+
 def output(LC):
     ## create a method to cread a text file and append in it some strings
     # create a text file
@@ -333,6 +342,7 @@ def output(LC):
     STRESS_avg_axial_stringer = avg_stress(LC_1D,A_stringer).tail(9)
     STRESS_avg_axial_stringer = STRESS_avg_axial_stringer.reset_index(drop=True)
     STRESS_avg_combined_stringer= combined_stress(STRESS_avg_XX,STRESS_avg_axial_stringer,A_leftpitch,A_rightpitch,A_stringer)
+    STRESS_max_combined_stringer = max_stress_stringers(LC_1D["Contour(Element Stresses (1D))"])
     
     file.write("---------------\n")
     file.write("Average stresses in Axial Stringers\n")
@@ -355,8 +365,9 @@ def output(LC):
     file.write("---------------\n")
     file.write("RF against Crippling\n")
     file.write("---------------\n")
-    file.write((column_buckling_cr_crip_web()/STRESS_avg_combined_stringer).to_string())
+    file.write((-1*column_buckling_cr_crip_web()/STRESS_max_combined_stringer).to_string()) # -1 for comperession
     file.write("\n")
+    file.write(str(column_buckling_cr_crip_web()))
     
     
 
@@ -365,4 +376,5 @@ if __name__ == "__main__":
     LC = 'LC2'
     output(LC) 
     print(LC + " is done")
+
     
