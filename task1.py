@@ -120,6 +120,21 @@ def column_buckling_cr_crip(): # ok
     sigma_crip = Fcrip / (2*b11*Sflathick+b12*Swebthick)
     return sigma_crip
     
+def column_buckling_cr_crip_web(): # ok
+    r_str = 0
+    b12 = Sheight - (Sflathick/2) * (2-0.5*(Swebthick/Sflathick)-0.2*(r_str**2/(Swebthick*Sflathick))) 
+    Ki = 0.41 # Supported at one side
+    x12 = (b12/Swebthick) * math.sqrt(Syield/(Ki*E))
+    alpha12 = choose_alpha(x12)
+    sigma_crip2 = alpha12 * Syield
+    # getting the average over the three elements (two halves of the flange and one web)
+    sigma = (sigma_crip2*b12*Swebthick)/(b12*Swebthick)
+    if sigma>=Syield:
+        Fcrip = Syield * (b12*Swebthick)
+    else: 
+        Fcrip = (sigma_crip2*b12*Swebthick)
+    sigma_crip = Fcrip / (b12*Swebthick)
+    return sigma_crip
 
 def column_buckling_cr_ej(): # ok
     lamda_euler_johnson = math.sqrt((2*(np.pi)**2*E)/Syield)
@@ -307,4 +322,7 @@ if __name__ == "__main__":
     print("---------------")
     print(column_buckling_RF(STRESS_avg_combined_stringer))
     
-
+    print("---------------")
+    print("RF against Crippling ")
+    print("---------------")
+    print(column_buckling_cr_crip_web()/STRESS_avg_combined_stringer)
