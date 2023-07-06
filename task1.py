@@ -47,15 +47,15 @@ wel_x_leftpitch = 200
 wel_x_rightpitch = 200
 A_leftpitch = wel_x_leftpitch/2 * t_s
 A_rightpitch = wel_x_rightpitch/2 * t_s
-
+I_total=0
+r=0
 k_biax = pd.DataFrame(columns=['k_biax'])
 k_shear = pd.DataFrame(columns=['k_shear'])
 
 def find_lambda():  # ok
-    
+    global I_total,r
     L =  600 # Depth of the stringer
     c =1 # Hinged
-    
     # Order: 
     # Skin, Flange, Web
     A_skin = 200*4
@@ -237,6 +237,7 @@ def max_stress_stringers(column):
     
 
 def output(LC):
+    global I_total,r
     ## create a method to cread a text file and append in it some strings
     # create a text file
     file = open(LC+"_final.txt","w")
@@ -253,7 +254,7 @@ def output(LC):
     # changing the index of RF_sf_skin to start with 1
     RF_sf_skin.index = RF_sf_skin.index + 1
     ## Reserve factors against strength failure for the stringers
-    RF_sf_stringer = round(Sult/LC_1D["Contour(Element Stresses (1D))"],2)
+    RF_sf_stringer = round(-1*Sult/LC_1D["Contour(Element Stresses (1D))"],2)
     # changing the index of RF_sf_stringer to start with 1 
     RF_sf_stringer.index = RF_sf_stringer.index + 1
     
@@ -357,6 +358,18 @@ def output(LC):
     file.write("\n")
     
     file.write("---------------\n")
+    file.write("I_total\n ")
+    file.write("---------------\n")
+    file.write(str(I_total))
+    file.write("\n")
+    
+    file.write("---------------\n")
+    file.write("Radius of Gyration\n ")
+    file.write("---------------\n")
+    file.write(str(r))
+    file.write("\n")
+    
+    file.write("---------------\n")
     file.write("RF against Column Panel Buckling\n ")
     file.write("---------------\n")
     file.write(column_buckling_RF(STRESS_avg_combined_stringer).to_string())
@@ -367,7 +380,6 @@ def output(LC):
     file.write("---------------\n")
     file.write((-1*column_buckling_cr_crip_web()/STRESS_max_combined_stringer).to_string()) # -1 for comperession
     file.write("\n")
-    file.write(str(column_buckling_cr_crip_web()))
     
     
 
