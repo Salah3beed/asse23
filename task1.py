@@ -134,7 +134,7 @@ def column_buckling_cr_crip_web(): # ok
     else: 
         Fcrip = (sigma_crip2*b12*Swebthick)
     sigma_crip = Fcrip / (b12*Swebthick)
-    return sigma_crip
+    return -1* sigma_crip ## The negative is because the critical buckling is always compressive
 
 def column_buckling_cr_ej(): # ok
     lamda_euler_johnson = math.sqrt((2*(np.pi)**2*E)/Syield)
@@ -145,7 +145,7 @@ def column_buckling_cr_ej(): # ok
 def column_buckling_RF(combined_stringer_stress):
     lamda_stress = find_lambda()
     sigma_cr = min(column_buckling_cr_euler(lamda_stress),column_buckling_cr_ej(),column_buckling_cr_crip())
-    RF = sigma_cr/combined_stringer_stress
+    RF = -1* sigma_cr/combined_stringer_stress # The negative is because the combined_stringer_stress is always compressive
     return RF
     
     
@@ -172,7 +172,7 @@ def optimize_K(sigma_y,sigma_x):
     alpha = a/b
     beta =sigma_y/sigma_x
     df = pd.DataFrame(columns=['K_sigma'])
-    for m in range(50):
+    for m in range(1,50):
         df.loc[m] = [(m**2+n**2*alpha**2)**2/(alpha**2*(m**2+beta*n**2*alpha**2))]
     # find the minimum value of the column in df
     min_K = df['K_sigma'].min()
@@ -180,7 +180,8 @@ def optimize_K(sigma_y,sigma_x):
     min_m = df['K_sigma'].idxmin()
     return min_K
 
-def sigma_x_crit(S_YY,S_XX): 
+def sigma_x_crit(S_YY,S_XX):
+    #TODO: check which one is more compressive and find the crtitical buckling in that direction 
     sigma_x_crit = pd.DataFrame(columns=['sigma_x_crit'])
     for i in range(10):
         k = optimize_K(S_YY.loc[i],S_XX.loc[i])
@@ -190,7 +191,7 @@ def sigma_x_crit(S_YY,S_XX):
 
 
 def get_combined_RF(RF_b,RF_s):
-    return (1/RF_b) + (1/RF_s)**2
+    return 1/((1/RF_b) + (1/RF_s)**2)
 
 # a method Divide two dataframes by each other
 def get_RF(df1,df2):
@@ -271,7 +272,7 @@ if __name__ == "__main__":
     print("---------------")  
     print(STRESS_avg_XY)
     
-    critical_Biaxial = sigma_x_crit(STRESS_avg_YY,STRESS_avg_XX)
+    critical_Biaxial = -1 * sigma_x_crit(STRESS_avg_YY,STRESS_avg_XX) # Critical buckling is compressive
     RF_Buckling_Biaxial = get_RF(critical_Biaxial,STRESS_avg_XX)
     
     print("---------------")
