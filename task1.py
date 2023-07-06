@@ -175,8 +175,8 @@ def optimize_K(sigma_y,sigma_x):
     df = pd.DataFrame(columns=['K_sigma'])
     for m in range(1,50):
         df.loc[m] = [(m**2+n**2*alpha**2)**2/(alpha**2*(m**2+beta*n**2*alpha**2))]
-    # find the minimum value of the column in df
-    min_K = df['K_sigma'].min()
+    # find the minimum but positive value of the column in df
+    min_K= df[df['K_sigma']>0]['K_sigma'].min()
     # find the minimum index of that minimum K
     min_m = df['K_sigma'].idxmin()
     return min_K
@@ -373,8 +373,14 @@ def output(LC):
 
 ## main function
 if __name__ == "__main__":
-    LC = 'LC2'
+    LC = 'Load Cases/LC1/LC1'
     output(LC) 
-    print(LC + " is done")
+    print((LC.split('/'))[-1] + " is done")
+    LC = 'Load Cases/LC2/LC2'
+    output(LC) 
+    print((LC.split('/'))[-1] + " is done")
+    LC = 'Load Cases/LC3/LC3'
+    output(LC) 
+    print((LC.split('/'))[-1] + " is done")
 
     
