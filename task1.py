@@ -145,6 +145,7 @@ def column_buckling_cr_ej(): # ok
 def column_buckling_RF(combined_stringer_stress):
     lamda_stress = find_lambda()
     sigma_cr = min(column_buckling_cr_euler(lamda_stress),column_buckling_cr_ej(),column_buckling_cr_crip())
+    sigma_cr = column_buckling_cr_euler(lamda_stress)
     RF = -1* sigma_cr/combined_stringer_stress # The negative is because the combined_stringer_stress is always compressive
     return RF
     
@@ -226,9 +227,14 @@ def combined_stress(Sxx,Sax,Al,Ar,As):
         combined.loc[i] = [(Sxx.loc[i]*Al + Sxx.loc[i+1]*Ar  + Sax.loc[i]*As)/(Al+Ar+As)]
     return combined
 
-## main function
-if __name__ == "__main__":
-    LC = 'LC2' 
+def output(LC):
+    ## create a method to cread a text file and append in it some strings
+    # create a text file
+    file = open(LC+"_final.txt","w")
+    file.write("---------------\n")
+    file.write("LC: "+LC+"\n")
+    file.write("---------------\n")
+    
     LC_VON = pd.read_csv(LC+'_VON.txt')
     LC_XX = pd.read_csv(LC+'_XX.txt')
     LC_YY = pd.read_csv(LC+'_YY.txt')
@@ -242,97 +248,121 @@ if __name__ == "__main__":
     # changing the index of RF_sf_stringer to start with 1 
     RF_sf_stringer.index = RF_sf_stringer.index + 1
     
-    print("---------------")
-    print("RF against Strength Failure for the Skin")
-    print("---------------") 
+    file.write("---------------\n")
+    file.write("RF against Strength Failure for the Skin\n")
+    file.write("---------------\n") 
     ## Reserve factors against strength failure for the skin
-    print(RF_sf_skin.head(30))
+    file.write(RF_sf_skin.head(30).to_string())
+    file.write("\n")
     
-    print("---------------")
-    print("RF against Strength Failure for the Stringers")
-    print("---------------") 
-    print(RF_sf_stringer.tail(27))
+    file.write("---------------\n")
+    file.write("RF against Strength Failure for the Stringers\n")
+    file.write("---------------\n") 
+    file.write(RF_sf_stringer.tail(27).to_string())
+    file.write("\n")
     
     STRESS_avg_XX = avg_stress(LC_XX,A_x).head(10)
     STRESS_avg_YY = avg_stress(LC_YY,A_y).head(10)
     STRESS_avg_XY = avg_stress(LC_XY,A_x).head(10)
     
-    print("---------------")
-    print("Average stresses in XX")
-    print("---------------")  
-    print(STRESS_avg_XX)
+    file.write("---------------\n")
+    file.write("Average stresses in XX\n")
+    file.write("---------------\n")  
+    file.write(STRESS_avg_XX.to_string())
+    file.write("\n")
     
-    print("---------------")
-    print("Average stresses in YY")
-    print("---------------")  
-    print(STRESS_avg_YY)
+    file.write("---------------\n")
+    file.write("Average stresses in YY\n")
+    file.write("---------------\n")  
+    file.write(STRESS_avg_YY.to_string())
+    file.write("\n")
     
-    print("---------------")
-    print("Average stresses in XY")
-    print("---------------")  
-    print(STRESS_avg_XY)
+    file.write("---------------\n")
+    file.write("Average stresses in XY\n")
+    file.write("---------------\n")  
+    file.write(STRESS_avg_XY.to_string())
+    file.write("\n")
     
     critical_Biaxial = -1 * sigma_x_crit(STRESS_avg_YY,STRESS_avg_XX) # Critical buckling is compressive
     RF_Buckling_Biaxial = get_RF(critical_Biaxial,STRESS_avg_XX)
     
-    print("---------------")
-    print("Critical Biaxial Stress")
-    print("---------------")
-    print(critical_Biaxial)
+    file.write("---------------\n")
+    file.write("Critical Biaxial Stress\n")
+    file.write("---------------\n")
+    file.write(critical_Biaxial.to_string())
+    file.write("\n")
     
-    print("---------------")
-    print("RF against Panel Buckling Biaxial")
-    print("---------------")   
+    file.write("---------------\n")
+    file.write("RF against Panel Buckling Biaxial\n")
+    file.write("---------------\n")   
     # changing the index of RF_Buckling_Biaxial to start with 1
     RF_Buckling_Biaxial.index = RF_Buckling_Biaxial.index + 1
-    print((RF_Buckling_Biaxial))
+    file.write((RF_Buckling_Biaxial).to_string())
+    file.write("\n")
     
-    print("---------------")
-    print("K_biax")
-    print("---------------")  
-    print(k_biax)
+    file.write("---------------\n")
+    file.write("K_biax\n")
+    file.write("---------------\n")  
+    file.write(k_biax.to_string())
+    file.write("\n")
     
     critical_Shear = sigma_xy_crit()
     RF_Buckling_Shear = get_RF(critical_Shear,STRESS_avg_XY)
     
-    print("---------------")
-    print("RF against Panel Buckling in Shear")
-    print("---------------")
+    file.write("---------------\n")
+    file.write("RF against Panel Buckling in Shear\n")
+    file.write("---------------\n")
     # changing the index of RF_Buckling_Shear to start with 1
     RF_Buckling_Shear.index = RF_Buckling_Shear.index + 1
-    print(RF_Buckling_Shear)
+    file.write(RF_Buckling_Shear.to_string())
+    file.write("\n")
     
-    print("---------------")
-    print("K_shear")
-    print("---------------")  
-    print(k_shear)
+    file.write("---------------\n")
+    file.write("K_shear\n")
+    file.write("---------------\n")  
+    file.write(k_shear.to_string())
+    file.write("\n")
     
-    print("---------------")
-    print("RF against Panel Buckling Combined")
-    print("---------------")   
+    file.write("---------------\n")
+    file.write("RF against Panel Buckling Combined\n")
+    file.write("---------------\n")   
     RF_Buckling = get_combined_RF(RF_Buckling_Biaxial,RF_Buckling_Shear)
-    print(RF_Buckling)    
+    file.write(RF_Buckling.to_string())    
+    file.write("\n")
     
     STRESS_avg_axial_stringer = avg_stress(LC_1D,A_stringer).tail(9)
     STRESS_avg_axial_stringer = STRESS_avg_axial_stringer.reset_index(drop=True)
     STRESS_avg_combined_stringer= combined_stress(STRESS_avg_XX,STRESS_avg_axial_stringer,A_leftpitch,A_rightpitch,A_stringer)
     
-    print("---------------")
-    print("Average stresses in Axial Stringers")
-    print("---------------")  
-    print(STRESS_avg_axial_stringer)
+    file.write("---------------\n")
+    file.write("Average stresses in Axial Stringers\n")
+    file.write("---------------\n")  
+    file.write(STRESS_avg_axial_stringer.to_string())
+    file.write("\n")
     
-    print("---------------")
-    print("Average stresses Combined in Stringers")
-    print("---------------")  
-    print(STRESS_avg_combined_stringer)
+    file.write("---------------\n")
+    file.write("Average stresses Combined in Stringers\n")
+    file.write("---------------\n")  
+    file.write(STRESS_avg_combined_stringer.to_string())
+    file.write("\n")
     
-    print("---------------")
-    print("RF against Column Panel Buckling ")
-    print("---------------")
-    print(column_buckling_RF(STRESS_avg_combined_stringer))
+    file.write("---------------\n")
+    file.write("RF against Column Panel Buckling\n ")
+    file.write("---------------\n")
+    file.write(column_buckling_RF(STRESS_avg_combined_stringer).to_string())
+    file.write("\n")
     
-    print("---------------")
-    print("RF against Crippling ")
-    print("---------------")
-    print(column_buckling_cr_crip_web()/STRESS_avg_combined_stringer)
+    file.write("---------------\n")
+    file.write("RF against Crippling\n")
+    file.write("---------------\n")
+    file.write((column_buckling_cr_crip_web()/STRESS_avg_combined_stringer).to_string())
+    file.write("\n")
+    
+    
+
+## main function
+if __name__ == "__main__":
+    LC = 'LC2'
+    output(LC) 
+    print(LC + " is done")
+    
