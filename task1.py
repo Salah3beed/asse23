@@ -257,7 +257,7 @@ def output(LC):
     RF_sf_stringer = round(-1*Sult/LC_1D["Contour(Element Stresses (1D))"],2)
     # changing the index of RF_sf_stringer to start with 1 
     RF_sf_stringer.index = RF_sf_stringer.index + 1
-    
+    RF_sf_stringer = abs(RF_sf_stringer.transpose()).transpose()
     file.write("---------------\n")
     file.write("RF against Strength Failure for the Skin\n")
     file.write("---------------\n") 
@@ -268,8 +268,11 @@ def output(LC):
     file.write("---------------\n")
     file.write("RF against Strength Failure for the Stringers\n")
     file.write("---------------\n") 
-    file.write(RF_sf_stringer.tail(27).to_string())
+    file.write(RF_sf_stringer.tail(28).to_string())
     file.write("\n")
+    
+    file.write("---------------\n")
+    file.write("Minimum RF in "+(LC.split('/'))[-1]+": " + str(min(RF_sf_skin.min(),RF_sf_stringer.min()))+"\n")
     
     STRESS_avg_XX = avg_stress(LC_XX,A_x).head(10)
     STRESS_avg_YY = avg_stress(LC_YY,A_y).head(10)
@@ -307,13 +310,13 @@ def output(LC):
     file.write("---------------\n")   
     # changing the index of RF_Buckling_Biaxial to start with 1
     RF_Buckling_Biaxial.index = RF_Buckling_Biaxial.index + 1
-    file.write((RF_Buckling_Biaxial).to_string())
+    file.write(round(RF_Buckling_Biaxial,2).to_string())
     file.write("\n")
     
     file.write("---------------\n")
     file.write("K_biax\n")
     file.write("---------------\n")  
-    file.write(k_biax.to_string())
+    file.write(round(k_biax,2).to_string())
     file.write("\n")
     
     critical_Shear = sigma_xy_crit()
@@ -324,21 +327,24 @@ def output(LC):
     file.write("---------------\n")
     # changing the index of RF_Buckling_Shear to start with 1
     RF_Buckling_Shear.index = RF_Buckling_Shear.index + 1
-    file.write(RF_Buckling_Shear.to_string())
+    file.write(round(RF_Buckling_Shear,2).to_string())
     file.write("\n")
     
     file.write("---------------\n")
     file.write("K_shear\n")
     file.write("---------------\n")  
-    file.write(k_shear.to_string())
+    file.write(round(k_shear,2).to_string())
     file.write("\n")
     
     file.write("---------------\n")
     file.write("RF against Panel Buckling Combined\n")
     file.write("---------------\n")   
-    RF_Buckling = get_combined_RF(RF_Buckling_Biaxial,RF_Buckling_Shear)
+    RF_Buckling = round(get_combined_RF(RF_Buckling_Biaxial,RF_Buckling_Shear),2)
     file.write(RF_Buckling.to_string())    
     file.write("\n")
+    
+    file.write("---------------\n")
+    file.write("minimum RF against panel buckling in "+(LC.split('/'))[-1]+ ": "+ str((RF_Buckling.min()))+"\n")
     
     STRESS_avg_axial_stringer = avg_stress(LC_1D,A_stringer).tail(9)
     STRESS_avg_axial_stringer = STRESS_avg_axial_stringer.reset_index(drop=True)
@@ -360,27 +366,37 @@ def output(LC):
     file.write("---------------\n")
     file.write("I_total\n ")
     file.write("---------------\n")
-    file.write(str(I_total))
+    file.write(str(round(I_total,2)))
     file.write("\n")
     
     file.write("---------------\n")
     file.write("Radius of Gyration\n ")
     file.write("---------------\n")
-    file.write(str(r))
+    file.write(str(round(r,2)))
     file.write("\n")
     
     file.write("---------------\n")
     file.write("RF against Column Panel Buckling\n ")
     file.write("---------------\n")
-    file.write(column_buckling_RF(STRESS_avg_combined_stringer).to_string())
+    RF_column_buckling = round(column_buckling_RF(STRESS_avg_combined_stringer),2)
+    file.write(RF_column_buckling.to_string())
     file.write("\n")
+    
+    file.write("---------------\n")
+    file.write("Minimum RF against Column Panel Buckling in "+(LC.split('/'))[-1]+ ": "+ str((RF_column_buckling.min()))+"\n")
     
     file.write("---------------\n")
     file.write("RF against Crippling\n")
     file.write("---------------\n")
-    file.write((-1*column_buckling_cr_crip_web()/STRESS_max_combined_stringer).to_string()) # -1 for comperession
+    
+    
+    RF_crippling = round((-1*column_buckling_cr_crip_web()/STRESS_max_combined_stringer),2)
+    file.write(RF_crippling.to_string()) # -1 for comperession
     file.write("\n")
     
+    file.write("---------------\n")
+    file.write("Minimum RF against crippling in "+(LC.split('/'))[-1]+ ": "+ str((RF_crippling.min()))+"\n")
+
     
 
 ## main function
