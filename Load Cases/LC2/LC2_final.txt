@@ -230,29 +230,29 @@ Radius of Gyration
 RF against Column Panel Buckling
  ---------------
    Combined Stress
-0             0.79
-1             0.75
+1             0.79
 2             0.75
 3             0.75
 4             0.75
 5             0.75
 6             0.75
 7             0.75
-8             0.79
+8             0.75
+9             0.79
 ---------------
 Minimum RF against Column Panel Buckling in LC2: Combined Stress    0.75
 dtype: float64
 ---------------
 RF against Crippling
 ---------------
-38    1.55
-41    1.66
-44    1.67
-47    1.68
-50    1.68
-53    1.68
-56    1.67
-59    1.66
-62    1.55
+1    1.55
+2    1.66
+3    1.67
+4    1.68
+5    1.68
+6    1.68
+7    1.67
+8    1.66
+9    1.55
 ---------------
 Minimum RF against crippling in LC2: 1.55

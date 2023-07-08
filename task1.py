@@ -378,7 +378,11 @@ def output(LC):
     file.write("---------------\n")
     file.write("RF against Column Panel Buckling\n ")
     file.write("---------------\n")
+    
     RF_column_buckling = round(column_buckling_RF(STRESS_avg_combined_stringer),2)
+    RF_column_buckling = RF_column_buckling.reset_index(drop=True)
+    RF_column_buckling.index = RF_column_buckling.index + 1
+    
     file.write(RF_column_buckling.to_string())
     file.write("\n")
     
@@ -389,11 +393,13 @@ def output(LC):
     file.write("RF against Crippling\n")
     file.write("---------------\n")
     
-    
     RF_crippling = round((-1*column_buckling_cr_crip_web()/STRESS_max_combined_stringer),2)
+    RF_crippling = RF_crippling.reset_index(drop=True)
+    RF_crippling.index = RF_crippling.index + 1
+    
     file.write(RF_crippling.to_string()) # -1 for comperession
     file.write("\n")
-    
+
     file.write("---------------\n")
     file.write("Minimum RF against crippling in "+(LC.split('/'))[-1]+ ": "+ str((RF_crippling.min()))+"\n")
 
