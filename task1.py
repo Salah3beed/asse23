@@ -143,11 +143,15 @@ def column_buckling_cr_ej(): # ok
     return sigma
     
 def column_buckling_RF(combined_stringer_stress):
-    lamda_stress = find_lambda()
-    sigma_cr = min(column_buckling_cr_euler(lamda_stress),column_buckling_cr_ej(),column_buckling_cr_crip())
-    sigma_cr = column_buckling_cr_euler(lamda_stress)
+    sigma_cr = get_sigma_cr()
     RF = -1* sigma_cr/combined_stringer_stress # The negative is because the combined_stringer_stress is always compressive
     return RF
+
+def get_sigma_cr():
+    lamda_stress = find_lambda()
+    sigma_cr = min(column_buckling_cr_euler(lamda_stress),column_buckling_cr_ej(),column_buckling_cr_crip())
+    #print("sigma_cr",sigma_cr)
+    return sigma_cr
     
     
 def optimize_K_Shear():
