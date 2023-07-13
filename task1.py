@@ -16,7 +16,7 @@ nu = 0.34
 PI = 3.14159265359
 
 # Panel Properties
-t = 4
+t = 5.2
 b = 200
 a = 600
 
@@ -28,7 +28,7 @@ S_LC3 = 1.021
 # Shell (Skin Areas) Properties
 w_s_x = 200
 w_s_y = 200
-t_s = 4
+t_s = t
 A_x = w_s_x * t_s
 A_y = w_s_y * t_s
 
@@ -58,9 +58,9 @@ def find_lambda():  # ok
     c =1 # Hinged
     # Order: 
     # Skin, Flange, Web
-    A_skin = 200*4
-    A_flange = 70*3
-    A_web = 37*2
+    A_skin = 200*t_s
+    A_flange = 70*Sflathick
+    A_web = 37*Swebthick
     # Z is defined from the top of the flange and positive is downwards
     z = [-2,1.5,21.5] # 3+37/2 = 21.5
     A = [A_skin,A_flange,A_web]
@@ -70,9 +70,9 @@ def find_lambda():  # ok
         sum_A_z+=A[i]*z[i]
         sum_A+=A[i]
     z_bar = sum_A_z/sum_A    
-    I_y_skin = 200*4**3/12
-    I_y_flange = 70*3**3/12
-    I_y_web = 2*37**3/12
+    I_y_skin = 200*(t_s)**3/12
+    I_y_flange = 70*(Sflathick)**3/12
+    I_y_web = Swebthick*37**3/12
     z_new=[0] * 3
     for i in range(len(z)):
         z_new[i] = z_bar - z[i]
