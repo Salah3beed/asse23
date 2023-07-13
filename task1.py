@@ -324,7 +324,20 @@ def output(LC):
     file.write("\n")
     
     critical_Shear = sigma_xy_crit()
+    
+    file.write("---------------\n")
+    file.write("Critical Shear Stress\n")
+    file.write("---------------\n")
+    file.write(critical_Shear.to_string())
+    file.write("\n")
+    
     RF_Buckling_Shear = get_RF(critical_Shear,STRESS_avg_XY)
+
+    file.write("---------------\n")
+    file.write("K_shear\n")
+    file.write("---------------\n")  
+    file.write(round(k_shear,2).to_string())
+    file.write("\n")
     
     file.write("---------------\n")
     file.write("RF against Panel Buckling in Shear\n")
@@ -334,11 +347,6 @@ def output(LC):
     file.write(round(RF_Buckling_Shear,2).to_string())
     file.write("\n")
     
-    file.write("---------------\n")
-    file.write("K_shear\n")
-    file.write("---------------\n")  
-    file.write(round(k_shear,2).to_string())
-    file.write("\n")
     
     file.write("---------------\n")
     file.write("RF against Panel Buckling Combined\n")
