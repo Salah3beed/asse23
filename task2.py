@@ -16,7 +16,7 @@ nu = 0.34
 PI = 3.14159265359
 
 # Panel Properties
-t=4 # Needs to be optimized
+t=5.2 # Needs to be optimized
 b = 200
 a = 600
 
@@ -37,7 +37,7 @@ Sheight= 40
 Sflange= 70
 Sflathick = 3
 Sweb = Sheight - Sflathick
-Swebthick = 2 # Needs to be optimized
+Swebthick = 3.6 # Needs to be optimized
 A_stringer = (Sweb*Swebthick) + (Sflange*Sflathick)
 # print(A_stringer)
 
@@ -51,6 +51,8 @@ I_total=0
 r=0
 k_biax = pd.DataFrame(columns=['k_biax'])
 k_shear = pd.DataFrame(columns=['k_shear'])
+global z_ec
+z_ec = 0
 
 def find_lambda():  # ok
     global I_total,r
@@ -62,14 +64,25 @@ def find_lambda():  # ok
     A_flange = 70*Sflathick
     A_web = 37*Swebthick
     # Z is defined from the top of the flange and positive is downwards
-    z = [-2,1.5,21.5] # 3+37/2 = 21.5
+    z = [-(t/2),Sflathick/2,21.5] # 3+37/2 = 21.5
     A = [A_skin,A_flange,A_web]
     sum_A =0 
     sum_A_z=0
     for i in range(len(z)):
         sum_A_z+=A[i]*z[i]
         sum_A+=A[i]
-    z_bar = sum_A_z/sum_A    
+    z_bar = sum_A_z/sum_A 
+    
+    sum_A_bar =0 
+    sum_A_z_bar=0
+    for i in range(len(z)):
+        if not(i==0):
+            sum_A_z_bar+=A[i]*z[i]
+            sum_A_bar+=A[i]
+    z_ec = sum_A_z_bar/sum_A_bar  
+    #print("The z offset of the stringer elements = ",str(-z_ec),"mm") 
+    
+    
     I_y_skin = 200*(t_s)**3/12
     I_y_flange = 70*(Sflathick)**3/12
     I_y_web = Swebthick*37**3/12
@@ -341,7 +354,7 @@ def output(LC):
     file.write("RF against Panel Buckling in Shear\n")
     file.write("---------------\n")
     # changing the index of RF_Buckling_Shear to start with 1
-    RF_Buckling_Shear.index = RF_Buckling_Shear.index + 1
+    #RF_Buckling_Shear.index = RF_Buckling_Shear.index + 1
     file.write(round(RF_Buckling_Shear,5).to_string())
     file.write("\n")
     

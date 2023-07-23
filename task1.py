@@ -341,7 +341,7 @@ def output(LC):
     file.write("RF against Panel Buckling in Shear\n")
     file.write("---------------\n")
     # changing the index of RF_Buckling_Shear to start with 1
-    RF_Buckling_Shear.index = RF_Buckling_Shear.index + 1
+    #RF_Buckling_Shear.index = RF_Buckling_Shear.index + 1
     file.write(round(RF_Buckling_Shear,5).to_string())
     file.write("\n")
     
