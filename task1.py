@@ -16,7 +16,7 @@ nu = 0.34
 PI = 3.14159265359
 
 # Panel Properties
-t = 5.2
+t=5.2 # Needs to be optimized
 b = 200
 a = 600
 
@@ -37,7 +37,7 @@ Sheight= 40
 Sflange= 70
 Sflathick = 3
 Sweb = Sheight - Sflathick
-Swebthick = 2
+Swebthick = 3.6 # Needs to be optimized
 A_stringer = (Sweb*Swebthick) + (Sflange*Sflathick)
 # print(A_stringer)
 
@@ -76,7 +76,6 @@ def find_lambda():  # ok
     z_new=[0] * 3
     for i in range(len(z)):
         z_new[i] = z_bar - z[i]
-    
     I_steiner_skin = I_y_skin + A_skin*z_new[0]**2
     I_steiner_flange = I_y_flange + A_flange*z_new[1]**2
     I_steiner_web = I_y_web + A_web*z_new[2]**2
@@ -254,11 +253,11 @@ def output(LC):
     LC_YY = pd.read_csv(LC+'_YY.txt')
     LC_XY = pd.read_csv(LC+'_XY.txt')
     LC_1D = pd.read_csv(LC+'_1D.txt')
-    RF_sf_skin = round(Sult/LC_VON["Contour(Element Stresses (2D & 3D))"],2)
+    RF_sf_skin = round(Sult/LC_VON["Contour(Element Stresses (2D & 3D))"],5)
     # changing the index of RF_sf_skin to start with 1
     RF_sf_skin.index = RF_sf_skin.index + 1
     ## Reserve factors against strength failure for the stringers
-    RF_sf_stringer = round(-1*Sult/LC_1D["Contour(Element Stresses (1D))"],2)
+    RF_sf_stringer = round(-1*Sult/LC_1D["Contour(Element Stresses (1D))"],5)
     # changing the index of RF_sf_stringer to start with 1 
     RF_sf_stringer.index = RF_sf_stringer.index + 1
     RF_sf_stringer = abs(RF_sf_stringer.transpose()).transpose()
@@ -314,13 +313,13 @@ def output(LC):
     file.write("---------------\n")   
     # changing the index of RF_Buckling_Biaxial to start with 1
     RF_Buckling_Biaxial.index = RF_Buckling_Biaxial.index + 1
-    file.write(round(RF_Buckling_Biaxial,2).to_string())
+    file.write(round(RF_Buckling_Biaxial,5).to_string())
     file.write("\n")
     
     file.write("---------------\n")
     file.write("K_biax\n")
     file.write("---------------\n")  
-    file.write(round(k_biax,2).to_string())
+    file.write(round(k_biax,5).to_string())
     file.write("\n")
     
     critical_Shear = sigma_xy_crit()
@@ -336,7 +335,7 @@ def output(LC):
     file.write("---------------\n")
     file.write("K_shear\n")
     file.write("---------------\n")  
-    file.write(round(k_shear,2).to_string())
+    file.write(round(k_shear,5).to_string())
     file.write("\n")
     
     file.write("---------------\n")
@@ -344,14 +343,14 @@ def output(LC):
     file.write("---------------\n")
     # changing the index of RF_Buckling_Shear to start with 1
     RF_Buckling_Shear.index = RF_Buckling_Shear.index + 1
-    file.write(round(RF_Buckling_Shear,2).to_string())
+    file.write(round(RF_Buckling_Shear,5).to_string())
     file.write("\n")
     
     
     file.write("---------------\n")
     file.write("RF against Panel Buckling Combined\n")
     file.write("---------------\n")   
-    RF_Buckling = round(get_combined_RF(RF_Buckling_Biaxial,RF_Buckling_Shear),2)
+    RF_Buckling = round(get_combined_RF(RF_Buckling_Biaxial,RF_Buckling_Shear),5)
     file.write(RF_Buckling.to_string())    
     file.write("\n")
     
@@ -378,20 +377,20 @@ def output(LC):
     file.write("---------------\n")
     file.write("I_total\n ")
     file.write("---------------\n")
-    file.write(str(round(I_total,2)))
+    file.write(str(round(I_total,5)))
     file.write("\n")
     
     file.write("---------------\n")
     file.write("Radius of Gyration\n ")
     file.write("---------------\n")
-    file.write(str(round(r,2)))
+    file.write(str(round(r,5)))
     file.write("\n")
     
     file.write("---------------\n")
     file.write("RF against Column Panel Buckling\n ")
     file.write("---------------\n")
     
-    RF_column_buckling = round(column_buckling_RF(STRESS_avg_combined_stringer),2)
+    RF_column_buckling = round(column_buckling_RF(STRESS_avg_combined_stringer),5)
     RF_column_buckling = RF_column_buckling.reset_index(drop=True)
     RF_column_buckling.index = RF_column_buckling.index + 1
     
@@ -405,7 +404,7 @@ def output(LC):
     file.write("RF against Crippling\n")
     file.write("---------------\n")
     
-    RF_crippling = round((-1*column_buckling_cr_crip_web()/STRESS_max_combined_stringer),2)
+    RF_crippling = round((-1*column_buckling_cr_crip_web()/STRESS_max_combined_stringer),5)
     RF_crippling = RF_crippling.reset_index(drop=True)
     RF_crippling.index = RF_crippling.index + 1
     
