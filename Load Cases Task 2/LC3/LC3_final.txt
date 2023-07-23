@@ -1,5 +1,5 @@
 ---------------
-LC: Load Cases/LC3/LC3
+LC: Load Cases Task 2/LC3/LC3
 ---------------
 ---------------
 RF against Strength Failure for the Skin

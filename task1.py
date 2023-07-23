@@ -16,7 +16,7 @@ nu = 0.34
 PI = 3.14159265359
 
 # Panel Properties
-t=5.2 # Needs to be optimized
+t=4 # Needs to be optimized
 b = 200
 a = 600
 
@@ -37,7 +37,7 @@ Sheight= 40
 Sflange= 70
 Sflathick = 3
 Sweb = Sheight - Sflathick
-Swebthick = 3.6 # Needs to be optimized
+Swebthick = 2 # Needs to be optimized
 A_stringer = (Sweb*Swebthick) + (Sflange*Sflathick)
 # print(A_stringer)
 
@@ -312,7 +312,6 @@ def output(LC):
     file.write("RF against Panel Buckling Biaxial\n")
     file.write("---------------\n")   
     # changing the index of RF_Buckling_Biaxial to start with 1
-    RF_Buckling_Biaxial.index = RF_Buckling_Biaxial.index + 1
     file.write(round(RF_Buckling_Biaxial,5).to_string())
     file.write("\n")
     
@@ -362,15 +361,18 @@ def output(LC):
     STRESS_avg_combined_stringer= combined_stress(STRESS_avg_XX,STRESS_avg_axial_stringer,A_leftpitch,A_rightpitch,A_stringer)
     STRESS_max_combined_stringer = max_stress_stringers(LC_1D["Contour(Element Stresses (1D))"])
     
+    
     file.write("---------------\n")
     file.write("Average stresses in Axial Stringers\n")
     file.write("---------------\n")  
+    STRESS_avg_axial_stringer.index = STRESS_avg_axial_stringer.index +1
     file.write(STRESS_avg_axial_stringer.to_string())
     file.write("\n")
     
     file.write("---------------\n")
     file.write("Average stresses Combined in Stringers\n")
     file.write("---------------\n")  
+    STRESS_avg_combined_stringer.index = STRESS_avg_combined_stringer.index +1
     file.write(STRESS_avg_combined_stringer.to_string())
     file.write("\n")
     
