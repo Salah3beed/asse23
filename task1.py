@@ -9,7 +9,7 @@ import math
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Rounding Dicimals 
-ROUND_DICIMAL = 2
+ROUND_DICIMAL = 5
 # Material properties
 E = 70747.95
 Sult = 530
@@ -18,7 +18,7 @@ nu = 0.34
 PI = 3.14159265359
 
 # Panel Properties
-t=4 # Needs to be optimized
+t=5.2 # Needs to be optimized
 b = 200
 a = 600
 
@@ -39,7 +39,7 @@ Sheight= 40
 Sflange= 70
 Sflathick = 3
 Sweb = Sheight - Sflathick
-Swebthick = 2 # Needs to be optimized
+Swebthick = 3.6 # Needs to be optimized
 A_stringer = (Sweb*Swebthick) + (Sflange*Sflathick)
 # print(A_stringer)
 
@@ -53,7 +53,8 @@ I_total=0
 r=0
 k_biax = pd.DataFrame(columns=['k_biax'])
 k_shear = pd.DataFrame(columns=['k_shear'])
-
+beta_all = pd.DataFrame(columns=['Beta'])
+m_all = pd.DataFrame(columns=['m used for Kbiaxial'])
 def find_lambda():  # ok
     global I_total,r
     L =  600 # Depth of the stringer
@@ -183,15 +184,18 @@ def optimize_K(sigma_y,sigma_x):
     # find the minimum but positive value of the column in df
     min_K= df[df['K_sigma']>0]['K_sigma'].min()
     # find the minimum index of that minimum K
-    min_m = df['K_sigma'].idxmin()
-    return min_K
+    min_m = df[df['K_sigma']>0]['K_sigma'].idxmin()
+    # find the index of min_K
+    return min_K,beta,min_m
 
 def sigma_x_crit(S_YY,S_XX):
     #TODO: check which one is more compressive and find the crtitical buckling in that direction 
     sigma_x_crit = pd.DataFrame(columns=['sigma_x_crit'])
     for i in range(10):
-        k = optimize_K(S_YY.loc[i],S_XX.loc[i])
+        k,beta,m = optimize_K(S_YY.loc[i],S_XX.loc[i])
         k_biax.loc[i] = [k]
+        beta_all.loc[i] = [beta]
+        m_all.loc[i] = [m]
         sigma_x_crit.loc[i] = [(E*(np.pi)**2)/(12*(1-nu**2)) * (t/b)**2 * k]
     return sigma_x_crit
 
@@ -321,6 +325,18 @@ def output(LC):
     file.write("K_biax\n")
     file.write("---------------\n")  
     file.write(round(k_biax,ROUND_DICIMAL).to_string())
+    file.write("\n")
+    
+    file.write("---------------\n")
+    file.write("Beta\n")
+    file.write("---------------\n")  
+    file.write(round(beta_all,ROUND_DICIMAL).to_string())
+    file.write("\n")
+    
+    file.write("---------------\n")
+    file.write("m used for Kbiax\n")
+    file.write("---------------\n")  
+    file.write(round(m_all,ROUND_DICIMAL).to_string())
     file.write("\n")
     
     critical_Shear = sigma_xy_crit()
